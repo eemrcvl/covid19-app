@@ -35,6 +35,6 @@ public class Country extends BaseEntity {
     @NonNull
     private int totalRecovered;
     @NonNull
-    private Date date;
+    private String date;
 
 }

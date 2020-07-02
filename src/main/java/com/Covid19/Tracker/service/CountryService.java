@@ -1,5 +1,7 @@
 package com.Covid19.Tracker.service;
 
+import com.Covid19.Tracker.model.Country;
+import com.Covid19.Tracker.repository.CountryRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -9,11 +11,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class CountryService {
     private static final String ApiURL = "https://api.covid19api.com/summary";
-    private JSONArray data;
+    private static JSONArray data;
+    private final CountryRepository countryRepository;
+
+    public CountryService(CountryRepository countryRepository) {
+        this.countryRepository = countryRepository;
+    }
+
     public String getDataFromAPI() throws IOException {
         URL url = new URL(ApiURL);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -38,6 +51,22 @@ public class CountryService {
         catch (IOException exception) {
             exception.getMessage();
         }
-        System.out.println(data);
+        Country[] countries = new Country[data.length()];
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        for (int i = 0; i < data.length(); i++){
+            countries[i] = new Country();
+            countries[i].setCountryName(data.getJSONObject(i).getString("Country"));
+            countries[i].setCountryCode(data.getJSONObject(i).getString("CountryCode"));
+            countries[i].setSlug(data.getJSONObject(i).getString("Slug"));
+            countries[i].setNewConfirmed(data.getJSONObject(i).getInt("NewConfirmed"));
+            countries[i].setTotalConfirmed(data.getJSONObject(i).getInt("TotalConfirmed"));
+            countries[i].setNewDeaths(data.getJSONObject(i).getInt("NewDeaths"));
+            countries[i].setTotalDeaths(data.getJSONObject(i).getInt("TotalDeaths"));
+            countries[i].setNewRecovered(data.getJSONObject(i).getInt("NewRecovered"));
+            countries[i].setTotalRecovered(data.getJSONObject(i).getInt("TotalRecovered"));
+            countries[i].setDate(data.getJSONObject(i).getString("Date"));
+            countryRepository.save(countries[i]);
+        }
+        //TODO: Check multithreading for loop above
     }
 }
