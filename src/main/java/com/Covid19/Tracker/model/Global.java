@@ -7,11 +7,20 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 public class Global extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id; //TODO: id starts from -> 187
+    @NonNull
+    private String date;
     @NonNull
     private int newConfirmed;
     @NonNull
@@ -24,5 +33,4 @@ public class Global extends BaseEntity {
     private int newRecovered;
     @NonNull
     private int totalRecovered;
-
 }
