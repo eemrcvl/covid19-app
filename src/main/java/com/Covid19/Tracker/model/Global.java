@@ -18,7 +18,7 @@ import javax.persistence.Id;
 public class Global extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id; //TODO: id starts from -> 187
+    private Long id;
     @NonNull
     private String date;
     @NonNull

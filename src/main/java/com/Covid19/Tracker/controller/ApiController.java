@@ -1,6 +1,6 @@
 package com.Covid19.Tracker.controller;
 
-import com.Covid19.Tracker.model.Country;
+import com.Covid19.Tracker.dto.CountryDto;
 import com.Covid19.Tracker.service.CountryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +17,7 @@ public class ApiController {
     }
 
     @GetMapping("/{countryCode}")
-    public ResponseEntity<Country> getStatsByCountry(@PathVariable String countryCode){
+    public ResponseEntity<CountryDto> getStatsByCountry(@PathVariable String countryCode){
         return countryService.getByCountryCode(countryCode);
     }
 

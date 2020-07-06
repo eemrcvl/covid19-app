@@ -10,7 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -20,6 +19,8 @@ public class Country extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @NonNull
+    private String date;
     @NonNull
     private String countryCode;
     @NonNull
@@ -38,7 +39,5 @@ public class Country extends BaseEntity {
     private int newRecovered;
     @NonNull
     private int totalRecovered;
-    @NonNull
-    private String date;
 
 }

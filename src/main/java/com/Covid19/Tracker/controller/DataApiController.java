@@ -8,7 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 @EnableScheduling
 @RestController
@@ -26,6 +27,7 @@ public class DataApiController {
     private static final String ApiURL = "https://api.covid19api.com/summary";
     private static JSONArray dataCountries;
     private static JSONObject dataGlobal;
+    private static SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private final CountryRepository countryRepository;
     private final GlobalRepository globalRepository;
 
@@ -33,6 +35,7 @@ public class DataApiController {
         this.countryRepository = countryRepository;
         this.globalRepository = globalRepository;
     }
+
     public void getDataFromAPI() throws IOException {
         URL url = new URL(ApiURL);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -50,16 +53,8 @@ public class DataApiController {
             dataGlobal = jsonObject.getJSONObject("Global");
         }
     }
-    @Scheduled(cron = "* 0 0 * * *",zone = "Europe/Istanbul")
-    public void updateData() {
-        try {
-            getDataFromAPI();
-        } catch (IOException exception) {
-            exception.getMessage();
-        }
 
-    }
-    @RequestMapping(value = "/fetch", method = RequestMethod.POST)
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
     @Scheduled(cron = "* 0 0 * * *",zone = "Europe/Istanbul")
     public void saveData() {
         //fetch country & global stats and save to db
@@ -68,9 +63,12 @@ public class DataApiController {
         } catch (IOException exception) {
             exception.getMessage();
         }
+        Calendar calendar = Calendar.getInstance();
+        String date = formatter.format(calendar.getTime());
         Country[] countries = new Country[dataCountries.length()];
         for (int i = 0; i < dataCountries.length(); i++){
             countries[i] = new Country();
+            countries[i].setDate(date);
             countries[i].setCountryName(dataCountries.getJSONObject(i).getString("Country"));
             countries[i].setCountryCode(dataCountries.getJSONObject(i).getString("CountryCode"));
             countries[i].setSlug(dataCountries.getJSONObject(i).getString("Slug"));
@@ -80,19 +78,18 @@ public class DataApiController {
             countries[i].setTotalDeaths(dataCountries.getJSONObject(i).getInt("TotalDeaths"));
             countries[i].setNewRecovered(dataCountries.getJSONObject(i).getInt("NewRecovered"));
             countries[i].setTotalRecovered(dataCountries.getJSONObject(i).getInt("TotalRecovered"));
-            countries[i].setDate(dataCountries.getJSONObject(i).getString("Date"));
         }
         for (Country country : countries) {
             countryRepository.save(country);
         }
         Global global = new Global();
-        global.setDate(dataCountries.getJSONObject(0).getString("Date"));
         global.setTotalConfirmed(dataGlobal.getInt("TotalConfirmed"));
         global.setNewConfirmed(dataGlobal.getInt("NewConfirmed"));
         global.setNewDeaths(dataGlobal.getInt("NewDeaths"));
         global.setTotalDeaths(dataGlobal.getInt("TotalDeaths"));
         global.setNewRecovered(dataGlobal.getInt("NewRecovered"));
         global.setTotalRecovered(dataGlobal.getInt("TotalRecovered"));
+        global.setDate(date);
         globalRepository.save(global);
     }
 }
