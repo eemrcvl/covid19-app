@@ -6,10 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -20,7 +18,7 @@ public class Global extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @NonNull
-    private String date;
+    private LocalDate date;
     @NonNull
     private int newConfirmed;
     @NonNull

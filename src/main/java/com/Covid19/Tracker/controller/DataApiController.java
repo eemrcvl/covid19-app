@@ -18,7 +18,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.Date;
 
 @EnableScheduling
 @RestController
@@ -63,12 +65,12 @@ public class DataApiController {
         } catch (IOException exception) {
             exception.getMessage();
         }
-        Calendar calendar = Calendar.getInstance();
-        String date = formatter.format(calendar.getTime());
+
+        LocalDate localDate = getLocalDate();
         Country[] countries = new Country[dataCountries.length()];
         for (int i = 0; i < dataCountries.length(); i++){
             countries[i] = new Country();
-            countries[i].setDate(date);
+            countries[i].setDate(localDate);
             countries[i].setCountryName(dataCountries.getJSONObject(i).getString("Country"));
             countries[i].setCountryCode(dataCountries.getJSONObject(i).getString("CountryCode"));
             countries[i].setSlug(dataCountries.getJSONObject(i).getString("Slug"));
@@ -79,9 +81,11 @@ public class DataApiController {
             countries[i].setNewRecovered(dataCountries.getJSONObject(i).getInt("NewRecovered"));
             countries[i].setTotalRecovered(dataCountries.getJSONObject(i).getInt("TotalRecovered"));
         }
+
         for (Country country : countries) {
             countryRepository.save(country);
         }
+
         Global global = new Global();
         global.setTotalConfirmed(dataGlobal.getInt("TotalConfirmed"));
         global.setNewConfirmed(dataGlobal.getInt("NewConfirmed"));
@@ -89,7 +93,10 @@ public class DataApiController {
         global.setTotalDeaths(dataGlobal.getInt("TotalDeaths"));
         global.setNewRecovered(dataGlobal.getInt("NewRecovered"));
         global.setTotalRecovered(dataGlobal.getInt("TotalRecovered"));
-        global.setDate(date);
+        global.setDate(localDate);
         globalRepository.save(global);
+    }
+    public static LocalDate getLocalDate(){
+        return LocalDate.now();
     }
 }

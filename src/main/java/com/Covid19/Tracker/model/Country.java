@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -20,7 +21,7 @@ public class Country extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @NonNull
-    private String date;
+    private LocalDate date;
     @NonNull
     private String countryCode;
     @NonNull

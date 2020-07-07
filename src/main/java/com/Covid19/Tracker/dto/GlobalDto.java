@@ -5,14 +5,12 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class CountryDto {
-    private String countryCode;
-    private String countryName;
+public class GlobalDto {
+    private LocalDate date;
     private int newConfirmed;
     private int totalConfirmed;
     private int newDeaths;
     private int totalDeaths;
     private int newRecovered;
     private int totalRecovered;
-    private LocalDate date;
 }
